@@ -49,6 +49,11 @@
       <p-fieldset legend="Query Kibana" class="mt-4">
         <div class="text-right mb-2">
           <p-button
+            icon="pi pi-question"
+            class="p-button-help p-button-outlined mr-2"
+            @click="showHowTo = true"
+          />
+          <p-button
             label="Copier"
             icon="pi pi-copy"
             class="p-button-md"
@@ -63,6 +68,22 @@
         />
       </p-fieldset>
     </div>
+
+    <p-dialog
+      v-model:visible="showHowTo"
+      :modal="true"
+      :dismissableMask="true"
+      header="Guide d'utilisation"
+      position="topright"
+    >
+      <div class="mb-5" v-for="(image, index) in howToImages" :key="image.src">
+        <p-divider type="solid" align="left">
+          <p-badge size="large" :value="index + 1" />
+        </p-divider>
+        <p class="text-lg">{{ image.title }}</p>
+        <img :src="image.src" class="border-round border-solid border-1 border-300">
+      </div>
+    </p-dialog>
 
     <p-toast position="bottom-right" />
   </div>
@@ -81,6 +102,24 @@ export default {
       csvRows: [],
       selectedColumn: null,
       kibanaField: '',
+      showHowTo: false,
+      howToImages: [
+        {
+          src: '/images/howto_01.jpeg',
+          alt: 'Imaage tuto 01',
+          title: 'Cliquez sur "Add filter".',
+        },
+        {
+          src: '/images/howto_02.jpeg',
+          alt: 'Imaage tuto 02',
+          title: 'Cliquez sur "Query as Query DSL".',
+        },
+        {
+          src: '/images/howto_03.jpeg',
+          alt: 'Imaage tuto 03',
+          title: 'Collez la requête dans "Elasticsearch Query DSL".',
+        },
+      ],
     };
   },
   computed: {
