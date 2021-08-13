@@ -13,6 +13,7 @@
             ref="fileInput"
             type="file"
             class="hidden"
+            accept=".csv"
             @change="onFileSelect"
           />
         </p>
@@ -46,6 +47,15 @@
       </p-fieldset>
 
       <p-fieldset legend="Query Kibana" class="mt-4">
+        <div class="text-right mb-2">
+          <p-button
+            label="Copier"
+            icon="pi pi-copy"
+            class="p-button-md"
+            @click="copyKibanaQuery"
+            :disabled="!kibanaQuery"
+          />
+        </div>
         <p-textarea
           class="w-full h-full"
           :value="kibanaQuery"
@@ -53,16 +63,18 @@
         />
       </p-fieldset>
     </div>
+
+    <p-toast position="bottom-right" />
   </div>
 </template>
 
 <script>
 import Papa from 'papaparse';
 
+const toastLife = 2500;
+
 export default {
   name: 'App',
-  components: {
-  },
   data() {
     return {
       csvHeaders: [],
@@ -103,6 +115,10 @@ export default {
       const file = files && files[0];
 
       if (!file) { return; }
+      if (!/\.csv$/i.test(file.name)) {
+        this.$toast.add({ severity: 'error', summary: 'Le fichier importé n\'est pas au format CSV', life: toastLife });
+        return;
+      }
 
       this.csvHeaders = [];
       this.csvRows = [];
@@ -123,6 +139,20 @@ export default {
           [this.selectedColumn] = this.csvHeaders;
         },
       });
+    },
+
+    async copyKibanaQuery() {
+      if (!navigator.clipboard) {
+        this.$toast.add({ severity: 'error', summary: 'Presse-papier non disponible', life: toastLife });
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(this.kibanaQuery);
+      } catch (e) {
+        this.$toast.add({ severity: 'error', summary: 'La copie a échoué', life: toastLife });
+        return;
+      }
+      this.$toast.add({ severity: 'success', summary: 'Query copiée dans le presse-papier', life: toastLife });
     },
   },
 };
