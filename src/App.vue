@@ -112,7 +112,7 @@ export default {
         {
           src: '/images/howto_02.jpeg',
           alt: 'Imaage tuto 02',
-          title: 'Cliquez sur "Query as Query DSL".',
+          title: 'Cliquez sur "Edit as Query DSL".',
         },
         {
           src: '/images/howto_03.jpeg',
