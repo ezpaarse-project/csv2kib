@@ -93,6 +93,7 @@
 import Papa from 'papaparse';
 
 const toastLife = 2500;
+const publicPath = process.env.BASE_URL;
 
 export default {
   name: 'App',
@@ -105,17 +106,17 @@ export default {
       showHowTo: false,
       howToImages: [
         {
-          src: '/images/howto_01.jpeg',
+          src: `${publicPath}images/howto_01.jpeg`,
           alt: 'Imaage tuto 01',
           title: 'Cliquez sur "Add filter".',
         },
         {
-          src: '/images/howto_02.jpeg',
+          src: `${publicPath}images/howto_02.jpeg`,
           alt: 'Imaage tuto 02',
           title: 'Cliquez sur "Edit as Query DSL".',
         },
         {
-          src: '/images/howto_03.jpeg',
+          src: `${publicPath}images/howto_03.jpeg`,
           alt: 'Imaage tuto 03',
           title: 'Collez la requête dans "Elasticsearch Query DSL".',
         },
