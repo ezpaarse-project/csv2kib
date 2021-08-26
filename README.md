@@ -1,5 +1,9 @@
 # csv2kib
 
+A minimal web app for converting CSV into a Kibana JSON filter.
+
+Try it live at https://ezpaarse-project.github.io/csv2kib/
+
 ## Project setup
 ```
 npm install
