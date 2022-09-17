@@ -1,107 +1,128 @@
 <template>
-  <div id="app" class="flex justify-content-center">
-    <div class="flex-grow-1 flex flex-column m-5" style="max-width: 800px">
-      <p-fieldset legend="Fichier source" class="border-dashed border-2">
-        <p class="text-center">
-          <p-button
-            label="Sélectionner un fichier CSV"
-            icon="pi pi-file"
-            class="p-button-lg"
-            @click="$refs.fileInput.click()"
-          />
-          <input
-            ref="fileInput"
-            type="file"
-            class="hidden"
+    <n-space vertical size="large" style="max-width: 800px; margin: auto; margin-top: 20px;">
+        <n-card title="Fichier source">
+          <n-upload
+            :file-list="[]"
             accept=".csv"
-            @change="onFileSelect"
-          />
-        </p>
-      </p-fieldset>
+            @before-upload="onFileSelect"
+          >
+            <n-upload-dragger>
+              <div style="margin-bottom: 12px">
+                <n-icon size="48" :depth="3">
+                  <file-download-icon />
+                </n-icon>
+              </div>
+              <n-text style="font-size: 16px">
+                Cliquez ou glissez votre fichier ici
+              </n-text>
+              <n-p depth="3" style="margin: 8px 0 0 0">
+                Le fichier doit être au format CSV
+              </n-p>
+            </n-upload-dragger>
+          </n-upload>
+        </n-card>
 
-      <p-fieldset legend="Options" class="mt-4">
-        <div class="formgrid grid">
-            <div class="field col">
-              <label for="csv-headers">Colonne contenant les valeurs</label>
-
-              <p-dropdown
-                id="csv-headers"
-                v-model="selectedColumn"
-                :options="csvHeaders"
-                :disabled="csvHeaders.length === 0"
-                class="w-full"
+        <n-card title="Options">
+          <n-form
+            label-placement="left"
+            label-width="auto"
+          >
+            <n-form-item label="Colonne contenant les valeurs" path="formValue.selectedColumn">
+              <n-select
+                v-model:value="formValue.selectedColumn"
+                :options="csvHeaderOptions"
+                :disabled="csvHeaderOptions.length === 0"
               />
-            </div>
+            </n-form-item>
 
-            <div class="field col">
-              <label for="kibana-field">Champ Kibana à filtrer</label>
+            <n-form-item label="Champ Kibana à filtrer" path="formValue.kibanaField">
+              <n-input v-model:value="formValue.kibanaField"  />
+            </n-form-item>
+          </n-form>
+        </n-card>
 
-              <p-input-text
-                id="kibana-field"
-                v-model="kibanaField"
-                type="text"
-                class="w-full"
-              />
-            </div>
-        </div>
-      </p-fieldset>
+        <n-card title="Query Kibana">
+          <template #header-extra>
+            <n-space>
+              <n-button @click="showHowTo = true">
+                <template #icon>
+                  <n-icon><question-mark-icon /></n-icon>
+                </template>
+              </n-button>
 
-      <p-fieldset legend="Query Kibana" class="mt-4">
-        <div class="text-right mb-2">
-          <p-button
-            icon="pi pi-question"
-            class="p-button-help p-button-outlined mr-2"
-            @click="showHowTo = true"
+              <n-button :disabled="!queryPreview" @click="copyKibanaQuery">
+                Copier
+              </n-button>
+            </n-space>
+          </template>
+
+          <n-code
+            v-if="queryPreview"
+            language="json"
+            :code="queryPreview"
           />
-          <p-button
-            label="Copier"
-            icon="pi pi-copy"
-            class="p-button-md"
-            @click="copyKibanaQuery"
-            :disabled="!kibanaQuery"
-          />
-        </div>
-        <p-textarea
-          class="w-full h-full"
-          :value="kibanaQuery"
-          rows="20"
-        />
-      </p-fieldset>
-    </div>
 
-    <p-dialog
-      v-model:visible="showHowTo"
-      :modal="true"
-      :dismissableMask="true"
-      header="Guide d'utilisation"
-      position="topright"
-    >
-      <div class="mb-5" v-for="(image, index) in howToImages" :key="image.src">
-        <p-divider type="solid" align="left">
-          <p-badge size="large" :value="index + 1" />
-        </p-divider>
-        <p class="text-lg">{{ image.title }}</p>
-        <img :src="image.src" class="border-round border-solid border-1 border-300">
-      </div>
-    </p-dialog>
+          <n-empty v-else description="Aperçu indisponible">
+            <template #icon>
+              <n-icon>
+                <code-icon />
+              </n-icon>
+            </template>
+            <template #extra>
+              <n-text depth="3">
+                Sélectionnez un fichier et saisissez vos paramètres.
+              </n-text>
+            </template>
+          </n-empty>
+        </n-card>
+    </n-space>
 
-    <p-toast position="bottom-right" />
-  </div>
+    <n-drawer v-model:show="showHowTo" :width="502" placement="right">
+      <n-drawer-content title="Guide d'utilisation">
+        <template v-for="(image, index) in howToImages" :key="image.src">
+          <n-divider title-placement="center">
+            Étape {{ index + 1 }}
+          </n-divider>
+
+          <n-p>{{ image.title }}</n-p>
+
+          <img
+            :src="image.src"
+            :alt="image.alt"
+            style="border: 1px solid #e0e0e0; border-radius: 3px;"
+          >
+        </template>
+      </n-drawer-content>
+    </n-drawer>
 </template>
 
 <script>
+import { defineComponent } from 'vue';
 import Papa from 'papaparse';
+import hljs from 'highlight.js/lib/core';
+import jsonLang from 'highlight.js/lib/languages/json';
 
-const toastLife = 2500;
+import {
+  useMessage,
+} from 'naive-ui';
+
+hljs.registerLanguage('json', jsonLang);
 
 const howto01 = require('@/assets/howto_01.jpeg');
 const howto02 = require('@/assets/howto_02.jpeg');
 const howto03 = require('@/assets/howto_03.jpeg');
 
-export default {
+export default defineComponent({
   name: 'App',
+  setup() {
+    window.$message = useMessage();
+  },
   data() {
     return {
+      formValue: {
+        selectedColumn: null,
+        kibanaField: '',
+      },
       csvHeaders: [],
       csvRows: [],
       selectedColumn: null,
@@ -110,33 +131,46 @@ export default {
       howToImages: [
         {
           src: howto01,
-          alt: 'Imaage tuto 01',
+          alt: 'Image tuto 01',
           title: 'Cliquez sur "Add filter".',
         },
         {
           src: howto02,
-          alt: 'Imaage tuto 02',
+          alt: 'Image tuto 02',
           title: 'Cliquez sur "Edit as Query DSL".',
         },
         {
           src: howto03,
-          alt: 'Imaage tuto 03',
+          alt: 'Image tuto 03',
           title: 'Collez la requête dans "Elasticsearch Query DSL".',
         },
       ],
     };
   },
   computed: {
-    kibanaQuery() {
-      if (!this.csvRows.length === 0) { return ''; }
-      if (!this.selectedColumn) { return ''; }
-      if (!this.kibanaField.trim()) { return ''; }
+    csvHeaderOptions() {
+      return this.csvHeaders.map((label) => ({ label, value: label }));
+    },
+    configIsReady() {
+      if (!this.csvRows.length === 0) { return false; }
+      if (!this.formValue.selectedColumn) { return false; }
+      if (!this.formValue.kibanaField.trim()) { return false; }
+      return true;
+    },
+    queryPreview() {
+      return this.getKibanaQuery({ limit: 1 });
+    },
+  },
+  methods: {
+    getKibanaQuery(opts = {}) {
+      if (!this.configIsReady) { return ''; }
 
       const should = this.csvRows
-        .filter((row) => row[this.selectedColumn])
+        .slice(0, opts?.limit)
+        .filter((row) => row[this.formValue.selectedColumn])
         .map((row) => ({
           match_phrase: {
-            [this.kibanaField]: row[this.selectedColumn],
+            [this.formValue.kibanaField]: row[this.formValue.selectedColumn],
           },
         }));
 
@@ -151,21 +185,18 @@ export default {
 
       return JSON.stringify(kibanaQuery, null, 2);
     },
-  },
-  methods: {
-    onFileSelect(event) {
-      const files = event?.target?.files;
-      const file = files && files[0];
+    onFileSelect(data) {
+      const file = data?.file?.file;
 
       if (!file) { return; }
       if (!/\.csv$/i.test(file.name)) {
-        this.$toast.add({ severity: 'error', summary: 'Le fichier importé n\'est pas au format CSV', life: toastLife });
+        window.$message.error('Le fichier importé n\'est pas au format CSV');
         return;
       }
 
       this.csvHeaders = [];
       this.csvRows = [];
-      this.selectedColumn = null;
+      this.formValue.selectedColumn = null;
 
       Papa.parse(file, {
         delimiter: ';',
@@ -179,24 +210,24 @@ export default {
             errors.forEach((e) => console.error(e));
           }
           this.csvRows = rows;
-          [this.selectedColumn] = this.csvHeaders;
+          [this.formValue.selectedColumn] = this.csvHeaders;
         },
       });
     },
 
     async copyKibanaQuery() {
       if (!navigator.clipboard) {
-        this.$toast.add({ severity: 'error', summary: 'Presse-papier non disponible', life: toastLife });
+        window.$message.error('Presse-papier non disponible');
         return;
       }
       try {
-        await navigator.clipboard.writeText(this.kibanaQuery);
+        await navigator.clipboard.writeText(this.getKibanaQuery());
       } catch (e) {
-        this.$toast.add({ severity: 'error', summary: 'La copie a échoué', life: toastLife });
+        window.$message.error('La copie a échoué');
         return;
       }
-      this.$toast.add({ severity: 'success', summary: 'Query copiée dans le presse-papier', life: toastLife });
+      window.$message.success('Query copiée dans le presse-papier');
     },
   },
-};
+});
 </script>

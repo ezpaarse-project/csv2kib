@@ -1,39 +1,57 @@
-import 'primeflex/primeflex.css';
-import 'primevue/resources/themes/saga-blue/theme.css';
-import 'primevue/resources/primevue.min.css';
-import 'primeicons/primeicons.css';
+import 'vfonts/FiraCode.css';
 
 import { createApp } from 'vue';
 
-import PrimeVue from 'primevue/config';
-import Button from 'primevue/button';
-import Textarea from 'primevue/textarea';
-import Fieldset from 'primevue/fieldset';
-import FileUpload from 'primevue/fileupload';
-import Dropdown from 'primevue/dropdown';
-import InputText from 'primevue/inputtext';
-import Toast from 'primevue/toast';
-import Dialog from 'primevue/dialog';
-import Divider from 'primevue/divider';
-import Badge from 'primevue/badge';
-import ToastService from 'primevue/toastservice';
+import {
+  NSpace,
+  NCard,
+  NCode,
+  NButton,
+  NDrawer,
+  NDrawerContent,
+  NDivider,
+  NEmpty,
+  NForm,
+  NFormItem,
+  NInput,
+  NSelect,
+  NUpload,
+  NUploadDragger,
+  NIcon,
+  NText,
+  NP,
+} from 'naive-ui';
 
-import App from './App.vue';
+import {
+  CodeFilled,
+  FileDownloadOutlined,
+  QuestionMarkFilled,
+} from '@vicons/material';
+
+import App from './AppWrapper.vue';
 
 const app = createApp(App);
 
-app.use(PrimeVue);
-app.use(ToastService);
+app.component('n-space', NSpace);
+app.component('n-card', NCard);
+app.component('n-code', NCode);
+app.component('n-button', NButton);
+app.component('n-drawer', NDrawer);
+app.component('n-drawer-content', NDrawerContent);
+app.component('n-divider', NDivider);
+app.component('n-empty', NEmpty);
+app.component('n-form', NForm);
+app.component('n-form-item', NFormItem);
+app.component('n-input', NInput);
+app.component('n-select', NSelect);
+app.component('n-upload', NUpload);
+app.component('n-upload-dragger', NUploadDragger);
+app.component('n-icon', NIcon);
+app.component('n-text', NText);
+app.component('n-p', NP);
 
-app.component('p-button', Button);
-app.component('p-textarea', Textarea);
-app.component('p-fieldset', Fieldset);
-app.component('p-file-upload', FileUpload);
-app.component('p-dropdown', Dropdown);
-app.component('p-input-text', InputText);
-app.component('p-toast', Toast);
-app.component('p-dialog', Dialog);
-app.component('p-divider', Divider);
-app.component('p-badge', Badge);
+app.component('file-download-icon', FileDownloadOutlined);
+app.component('code-icon', CodeFilled);
+app.component('question-mark-icon', QuestionMarkFilled);
 
 app.mount('#app');
