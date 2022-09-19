@@ -187,8 +187,8 @@ export default defineComponent({
       if (!this.configIsReady) { return ''; }
 
       const should = this.csvRows
-        .slice(0, opts?.limit)
         .filter((row) => row[this.formValue.selectedColumn])
+        .slice(0, opts?.limit)
         .map((row) => ({
           match_phrase: {
             [this.formValue.kibanaField]: row[this.formValue.selectedColumn],
