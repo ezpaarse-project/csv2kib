@@ -232,6 +232,10 @@ export default defineComponent({
           }
           this.csvRows = rows;
           [this.formValue.selectedColumn] = this.csvHeaders;
+
+          if (!this.formValue.kibanaField) {
+            this.formValue.kibanaField = this.formValue.selectedColumn;
+          }
         },
       });
     },
