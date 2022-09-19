@@ -1,0 +1,20 @@
+body {
+  min-height: 100vh;
+  background-image: url('./assets/background_white.svg');
+  background-color: #5f98df;
+  backdrop-filter: brightness(0.5);
+}
+
+#app {
+  display: flow-root;
+  padding: 20px 10px;
+}
+
+.code {
+  font-family: monospace;
+  background-color: rgba(0,0,0,.05);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 85%;
+  font-weight: 400;
+}

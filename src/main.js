@@ -1,4 +1,5 @@
 import 'vfonts/FiraCode.css';
+import './styles.css';
 
 import { createApp } from 'vue';
 
@@ -26,6 +27,7 @@ import {
   CodeFilled,
   FileDownloadOutlined,
   QuestionMarkFilled,
+  ContentCopyOutlined,
 } from '@vicons/material';
 
 import App from './AppWrapper.vue';
@@ -53,5 +55,6 @@ app.component('n-p', NP);
 app.component('file-download-icon', FileDownloadOutlined);
 app.component('code-icon', CodeFilled);
 app.component('question-mark-icon', QuestionMarkFilled);
+app.component('copy-content-icon', ContentCopyOutlined);
 
 app.mount('#app');

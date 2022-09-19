@@ -1,99 +1,120 @@
 <template>
-    <n-space vertical size="large" style="max-width: 800px; margin: auto; margin-top: 20px;">
-        <n-card title="Fichier source">
-          <n-upload
-            :file-list="[]"
-            accept=".csv"
-            @before-upload="onFileSelect"
-          >
-            <n-upload-dragger>
-              <div style="margin-bottom: 12px">
-                <n-icon size="48" :depth="3">
-                  <file-download-icon />
-                </n-icon>
-              </div>
-              <n-text style="font-size: 16px">
-                Cliquez ou glissez votre fichier ici
-              </n-text>
-              <n-p depth="3" style="margin: 8px 0 0 0">
-                Le fichier doit être au format CSV
-              </n-p>
-            </n-upload-dragger>
-          </n-upload>
-        </n-card>
+  <n-space vertical :size="20" style="max-width: 800px; margin: 0 auto;">
+    <n-card title="Fichier source">
+      <n-p>
+        Déposez ici un fichier CSV contenant les valeurs à filtrer.
+      </n-p>
 
-        <n-card title="Options">
-          <n-form
-            label-placement="left"
-            label-width="auto"
-          >
-            <n-form-item label="Colonne contenant les valeurs" path="formValue.selectedColumn">
-              <n-select
-                v-model:value="formValue.selectedColumn"
-                :options="csvHeaderOptions"
-                :disabled="csvHeaderOptions.length === 0"
-              />
-            </n-form-item>
+      <n-upload
+        :file-list="[]"
+        accept=".csv"
+        @before-upload="onFileSelect"
+      >
+        <n-upload-dragger>
+          <div style="margin-bottom: 12px">
+            <n-icon size="48" :depth="3">
+              <file-download-icon />
+            </n-icon>
+          </div>
+          <n-text style="font-size: 16px">
+            Cliquez ou glissez votre fichier ici
+          </n-text>
+        </n-upload-dragger>
+      </n-upload>
+    </n-card>
 
-            <n-form-item label="Champ Kibana à filtrer" path="formValue.kibanaField">
-              <n-input v-model:value="formValue.kibanaField"  />
-            </n-form-item>
-          </n-form>
-        </n-card>
-
-        <n-card title="Query Kibana">
-          <template #header-extra>
-            <n-space>
-              <n-button @click="showHowTo = true">
-                <template #icon>
-                  <n-icon><question-mark-icon /></n-icon>
-                </template>
-              </n-button>
-
-              <n-button :disabled="!queryPreview" @click="copyKibanaQuery">
-                Copier
-              </n-button>
-            </n-space>
-          </template>
-
-          <n-code
-            v-if="queryPreview"
-            language="json"
-            :code="queryPreview"
+    <n-card title="Options">
+      <n-form
+        label-placement="left"
+        label-width="auto"
+      >
+        <n-form-item label="Colonne contenant les valeurs" path="formValue.selectedColumn">
+          <n-select
+            v-model:value="formValue.selectedColumn"
+            :options="csvHeaderOptions"
+            :disabled="csvHeaderOptions.length === 0"
           />
+        </n-form-item>
 
-          <n-empty v-else description="Aperçu indisponible">
-            <template #icon>
-              <n-icon>
-                <code-icon />
-              </n-icon>
-            </template>
-            <template #extra>
-              <n-text depth="3">
-                Sélectionnez un fichier et saisissez vos paramètres.
-              </n-text>
-            </template>
-          </n-empty>
-        </n-card>
-    </n-space>
+        <n-form-item label="Champ Kibana à filtrer" path="formValue.kibanaField">
+          <n-input v-model:value="formValue.kibanaField"  />
+        </n-form-item>
+      </n-form>
+    </n-card>
 
-    <n-drawer v-model:show="showHowTo" :width="502" placement="right">
-      <n-drawer-content title="Guide d'utilisation">
-        <template v-for="(image, index) in howToImages" :key="image.src">
-          <n-divider title-placement="center">
-            Étape {{ index + 1 }}
-          </n-divider>
-
-          <n-p>{{ image.title }}</n-p>
-
-          <img
-            :src="image.src"
-            :alt="image.alt"
-            style="border: 1px solid #e0e0e0; border-radius: 3px;"
+    <n-card title="Filtre Kibana">
+      <template #header-extra>
+        <n-space>
+          <n-button
+            type="info"
+            secondary
+            icon
+            circle
+            @click="showHowTo = true"
           >
+            <template #icon>
+              <n-icon><question-mark-icon /></n-icon>
+            </template>
+          </n-button>
+
+          <n-button
+            type="primary"
+            icon
+            :disabled="!queryPreview"
+            @click="copyKibanaQuery"
+          >
+            <template #icon>
+              <n-icon><copy-content-icon /></n-icon>
+            </template>
+            Copier
+          </n-button>
+        </n-space>
+      </template>
+
+      <n-p>
+        La requête ci-dessous est un aperçu basé sur un unique élément du jeu de données.
+        Cliquez sur le bouton <span class="code">Copier</span>
+        pour récupérer la requête complète dans votre presse-papier.
+      </n-p>
+
+      <n-code
+        v-if="queryPreview"
+        language="json"
+        :code="queryPreview"
+      />
+
+      <n-empty v-else description="Aperçu indisponible">
+        <template #icon>
+          <n-icon>
+            <code-icon />
+          </n-icon>
         </template>
-      </n-drawer-content>
-    </n-drawer>
+        <template #extra>
+          <n-text depth="3">
+            Sélectionnez un fichier et saisissez vos paramètres.
+          </n-text>
+        </template>
+      </n-empty>
+    </n-card>
+  </n-space>
+
+  <n-drawer v-model:show="showHowTo" :width="502" placement="right">
+    <n-drawer-content title="Guide d'utilisation">
+      <template v-for="(image, index) in howToImages" :key="image.src">
+        <n-divider title-placement="center">
+          Étape {{ index + 1 }}
+        </n-divider>
+
+        <n-p>{{ image.title }}</n-p>
+
+        <img
+          :src="image.src"
+          :alt="image.alt"
+          style="border: 1px solid #e0e0e0; border-radius: 3px;"
+        >
+      </template>
+    </n-drawer-content>
+  </n-drawer>
 </template>
 
 <script>
