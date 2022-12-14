@@ -37,7 +37,7 @@
         </n-form-item>
 
         <n-form-item label="Champ Kibana à filtrer" path="formValue.kibanaField">
-          <n-input v-model:value="formValue.kibanaField"  />
+          <n-input v-model:value="formValue.kibanaField" />
         </n-form-item>
       </n-form>
     </n-card>
@@ -98,7 +98,11 @@
     </n-card>
   </n-space>
 
-  <n-drawer v-model:show="showHowTo" :width="502" placement="right">
+  <n-drawer
+    v-model:show="showHowTo"
+    :width="500"
+    placement="right"
+  >
     <n-drawer-content title="Guide d'utilisation">
       <template v-for="(image, index) in howToImages" :key="image.src">
         <n-divider title-placement="center">
@@ -129,9 +133,9 @@ import {
 
 hljs.registerLanguage('json', jsonLang);
 
-const howto01 = require('@/assets/howto_01.jpeg');
-const howto02 = require('@/assets/howto_02.jpeg');
-const howto03 = require('@/assets/howto_03.jpeg');
+const howto01 = require('@/assets/howto_01.jpeg'); // eslint-disable-line import/no-unresolved
+const howto02 = require('@/assets/howto_02.jpeg'); // eslint-disable-line import/no-unresolved
+const howto03 = require('@/assets/howto_03.jpeg'); // eslint-disable-line import/no-unresolved
 
 export default defineComponent({
   name: 'App',
@@ -146,8 +150,6 @@ export default defineComponent({
       },
       csvHeaders: [],
       csvRows: [],
-      selectedColumn: null,
-      kibanaField: '',
       showHowTo: false,
       howToImages: [
         {
