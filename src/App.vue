@@ -184,6 +184,13 @@ export default defineComponent({
       return this.getKibanaQuery({ limit: 1 });
     },
   },
+  watch: {
+    'formValue.selectedColumn': function selectedColumn(newVal, oldVal) {
+      if (!this.formValue.kibanaField || this.formValue.kibanaField === oldVal) {
+        this.formValue.kibanaField = newVal;
+      }
+    },
+  },
   methods: {
     getKibanaQuery(opts = {}) {
       if (!this.configIsReady) { return ''; }
@@ -234,10 +241,6 @@ export default defineComponent({
           }
           this.csvRows = rows;
           [this.formValue.selectedColumn] = this.csvHeaders;
-
-          if (!this.formValue.kibanaField) {
-            this.formValue.kibanaField = this.formValue.selectedColumn;
-          }
         },
       });
     },
